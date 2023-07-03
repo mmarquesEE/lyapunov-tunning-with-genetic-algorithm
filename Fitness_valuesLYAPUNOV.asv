@@ -1,6 +1,5 @@
 function fitness = Fitness_valuesLYAPUNOV(pop,opts)
     arguments
-        pop
         opts.tfin = 5;
         opts.dini = 3;
         opts.aini = pi/2;
@@ -24,8 +23,7 @@ function fitness = Fitness_valuesLYAPUNOV(pop,opts)
     for i = 1:popsize
         gamma = gp(i,:)*pow2(n-1:-1:-m).';
         k = gi(i,:)*pow2(n-1:-1:-m).';
-        [t,x]=ode45(@(t,x) robotDynamics(x,gamma,k,opts.dini),...
-                                [0 opts.tfin],[0;0;opts.aini],optionsODE);
+        [t,x]=ode45(@(t,x)robotDynamics(x,gamma,k),[0 opts.tfin],[0;0;opts.aini],optionsODE);
         
         xp=x(:,1);
         yp=x(:,2);
@@ -48,10 +46,10 @@ function fitness = Fitness_valuesLYAPUNOV(pop,opts)
         u = k .* e .* cos(alpha);
 
         yp = yp.*heaviside(-t + t_reach);
-        Vobj1(i) = abs(max(abs(yp)) - opts.y_ref);
+        Vobj1(i) = abs(max(yp) - opts.y_ref);
 
         u = u.*heaviside(-t + t_reach);
-        Vobj2(i) = abs(max(abs(u)) - opts.u_ref);
+        Vobj2(i) = abs(max(u) - opts.u_ref);
 
     end
     %dist_error = Vobj';

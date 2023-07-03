@@ -1,12 +1,7 @@
 clear
 close
 clc
-%% Dynamic simulation setup
-dini = 3; aini = pi;
-yref = 0.1; uref = 0.8;
-tfin = 5;
-
-%% Genetic algorithm config
+%%
 len=40;                    % The length of the genomes  
 n = 1;
 popSize=200;               % The size of the population (must be an even number)
@@ -58,13 +53,7 @@ eliteFitness=-realmax;
 pop=rand(popSize,len)<.5;
 
 for gen=0:maxGens
-    fitnessVals=Fitness_valuesLYAPUNOV(pop,...
-            tfin=tfin,...
-            dini=dini,...
-            aini=aini,...
-            y_ref=yref,...
-            u_ref=uref...
-        );
+    fitnessVals=Fitness_valuesLYAPUNOV(pop,);
      
     [maxFitnessHist(1,gen+1),maxIndex]=max(fitnessVals);   
     avgFitnessHist(1,gen+1)=mean(fitnessVals);
@@ -168,13 +157,14 @@ end
 [maxValue, maxIndex] = max(avgFitnessHist);
 n = 4;
 m = 20 - n;
-
+%gp = eliteIndiv(:,1:len_Palavra);
+%gi = eliteIndiv(:,len_Palavra+1:2*len_Palavra);
 [popsize, len] = size(pop);
 len_Palavra = len/2;
-
+%
 gp = pop(:,1:len_Palavra);
 gi = pop(:,len_Palavra+1:2*len_Palavra);
-
+%
 gamma = gp*pow2(n-1:-1:-m).';
 k = gi*pow2(n-1:-1:-m).';
 
@@ -189,7 +179,7 @@ gamma_10_in_10(end+1) = gamma_end;
 kappa_10_in_10(end+1) = kappa_end;
 
 tfin = 10;
-xini=[0;0;aini];
+xini=[0;0;pi/2];
 optionsODE=odeset('RelTol',1e-6);
 
 % Define line colors and styles
@@ -216,7 +206,7 @@ for i = 1:size(gamma_10_in_10)
         popu = 200;
     end
     % Perform the ode45 simulation for the current gamma and kappa
-    [t, x] = ode45(@(t, x) robotDynamics(x, gamma_10_in_10(i), kappa_10_in_10(i), dini),...
+    [t, x] = ode45(@(t, x) robotDynamics(x, gamma_10_in_10(i), kappa_10_in_10(i), xg),...
                                             [0 tfin], xini, optionsODE);
     
     % Plot the results for the current simulation in Figure 4
